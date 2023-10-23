@@ -1,0 +1,476 @@
+<head>
+  <title>UD Trucks Portal Navigator</title>
+</head>
+<style>
+  #app {
+    padding: 20px;
+  }
+
+  #app .list-group.header {
+    font-size: 1rem;
+  }
+
+  #app .list-group.body {
+    max-height: calc(100vh - 2 * 20px - 113px);
+    overflow-y: auto;
+  }
+</style>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet"
+  integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
+  integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.min.js"
+  integrity="sha384-Rx+T1VzGupg4BHQYs2gCW9It+akI2MM/mndMCy36UVfodzcJcF0GGLxZIzObiEfa" crossorigin="anonymous"></script>
+<script type="importmap">
+  {
+    "imports": {
+      "vue": "https://unpkg.com/vue@3/dist/vue.esm-browser.js"
+    }
+  }
+</script>
+
+<body>
+  <div id="app">
+    <div class="container text-center" v-show="isLoaded" style="display: none;">
+      <div class="row align-items-center justify-content-md-center">
+        <div class="col align-self-center">
+          <ul class="list-group header">
+            <li class="list-group-item">{{title}}</li>
+            <li class="list-group-item">
+              <div class="input-group mb-3">
+                <span class="input-group-text" id="basic-addon1"><i class="bi bi-search"></i></span>
+                <input type="text" class="form-control" placeholder="App name" aria-label="App name"
+                  aria-describedby="basic-addon1" v-model="criteria">
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="row align-items-center">
+        <div class="col align-self-center">
+          <ul class="list-group body">
+            <li class="list-group-item" v-for="link in filteredLinks"><a :href="link.url" data-bs-toggle="tooltip"
+                :data-bs-title="link.title" target="_blank">{{link.title}}</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+<script type="module">
+  import { createApp, ref, computed, onMounted } from 'vue'
+  createApp({
+    data() {
+      return {
+        title: 'UD Trucks Portal Navigator',
+        isLoaded: false,
+        criteria: '',
+        links: [
+          {
+            title: "Global Document Library Indonesia",
+            url: "https://securemobile.volvo.com/gdl-0B0/",
+          },
+          {
+            title: "Global Document Library KENYA",
+            url: "https://securemobile.volvo.com/gdl-072",
+          },
+          {
+            title: "Global Document Library Malaysia",
+            url: "https://securemobile.volvo.com/gdl-015",
+          },
+          {
+            title: "Global Document Library SAUDI ARABIA",
+            url: "https://securemobile.volvo.com/gdl-086",
+          },
+          {
+            title: "Application for Distribution",
+            url: "https://secure8.volvo.com/a4d/",
+          },
+          {
+            title: "Application Statistics",
+            url: "https://grouptrucksportal.volvo.com/ebusiness/applicationstatistics/default.aspx",
+          },
+          { title: "Argus 365", url: "https://argus365.crm7.dynamics.com/" },
+          { title: "Argus Dealer", url: "https://securewss.volvo.com/AOLPARTSEUR" },
+          { title: "ATLAS_BIP@UD", url: "https://iamapps.udtrucks.com/xmlpserver" },
+          { title: "Atlas_OTM@UD", url: "https://iamapps.udtrucks.com/ATLAS" },
+          { title: "BALDO", url: "https://secure.volvo.com/BaldoWeb" },
+          {
+            title: "BIP QA",
+            url: "https://udgotl2141.got.udtrucks.net:9553/xmlpserver/",
+          },
+          { title: "BOX", url: "https://securedatajp.volvo.com/ye/" },
+          {
+            title: "Campaign Information",
+            url: "https://secure3.volvo.com/DocViewer/psi.do",
+          },
+          { title: "CBR", url: "https://iamapps.udtrucks.com/cbr/" },
+          {
+            title: "Compass order Handling",
+            url: "https://iamapps.udtrucks.com/compass/#/main/welcome",
+          },
+          {
+            title: "Competitor Comparison Tool",
+            url: "https://secure4.volvo.com/CompetitorComparison/",
+          },
+          {
+            title: "CO-Pilot (Tracking System)",
+            url: "https://iamapps.udtrucks.com/CO-Pilot",
+          },
+          {
+            title: "Core Management System",
+            url: "https://saas.volvo.com/cms/base/login.do?lang=#Language",
+          },
+          { title: "CQ-Online new", url: "https://saas.volvo.com/vospcq/" },
+          {
+            title: "Credit Portal",
+            url: "https://ui5mf.udtrucks.com/sap/bc/ui2/flp?#Shell-home",
+          },
+          { title: "CRM for UDT JSVS", url: "https://udcrm.my.salesforce.com" },
+          { title: "CSI", url: "https://secure7.volvo.com/csi/" },
+          {
+            title: "cTDI",
+            url: "HTTPS://secure4.volvo.com/CTDI/landingPage?connectionName=VF05",
+          },
+          { title: "Customer Management", url: "https://secure3.volvo.com/caesar" },
+          {
+            title: "Customer Satisfaction Survey Back Office",
+            url: "https://iamapps.udtrucks.com/pkmscdsso?https://iamappsjp.udtrucks.com/jpcss",
+          },
+          { title: "Dealerpoint", url: "https://secure8.volvo.com/dealerpoint2018" },
+          { title: "Ecom UDOP", url: "https://iamapps.udtrucks.com/udcfs" },
+          { title: "Embla", url: "http://secure3.volvo.com/embla" },
+          { title: "EQ-HIT", url: "https://udtrucks.snaponepc.com/epc/#/" },
+          {
+            title: "Evolv@UD",
+            url: "https://udgotl2102.got.udtrucks.net:8443/evolv/app/signin.html",
+          },
+          {
+            title: "Features Online",
+            url: "https://securedata.volvo.com/RWT?b=VlRDfEZPTA==",
+          },
+          {
+            title: "Field Service Tips (FST)",
+            url: "https://secure3.volvo.com/DocViewer/fst.do",
+          },
+          { title: "FIRST", url: "https://ud81.got.udtrucks.net/owweb/LOGON.HTML" },
+          { title: "GDL-010", url: "https://iamapps.udtrucks.com/gdl-010" },
+          { title: "GDL-086", url: "https://iamapps.udtrucks.com/gdl-086" },
+          { title: "GDL-0A9", url: "https://iamapps.udtrucks.com/gdl-0A9" },
+          { title: "GDL-0B0", url: "https://iamapps.udtrucks.com/gdl-0B0" },
+          { title: "GDL-0B3", url: "https://iamapps.udtrucks.com/gdl-0B3" },
+          { title: "GDL-0B4", url: "https://iamapps.udtrucks.com/gdl-0B4" },
+          { title: "GPP", url: "https://grouptrucksportal.volvo.com/gpp/index.html" },
+          { title: "Hdoc VT", url: "https://secure.volvo.com/hdoc/index3.html" },
+          {
+            title: "Impact Customised Online",
+            url: "https://secure2.volvo.com/impact3/application",
+          },
+          { title: "Impact Customized DVD", url: "http://secure2.volvo.com/ipm/" },
+          {
+            title: "Impact Online",
+            url: "https://secure2.volvo.com/impact3/application",
+          },
+          {
+            title: "Inquiry Manager UD",
+            url: "https://iamapps.udtrucks.com/vtim/?Brand=UD",
+          },
+          {
+            title: "Inquiry Manager Volvo",
+            url: "https://secure3.volvo.com/vtimref/redirect.asp?Brand=Volvo",
+          },
+          {
+            title: "JCCT(COSMOS2信用調査書)",
+            url: "https://iamapps.udtrucks.com/jcct_prod/jcct/JcctTDB/SearchTDBInfo",
+          },
+          {
+            title: "Kazetパーツカタログ",
+            url: "https://ascent2.mitsubishi-fuso.com/Account/UDTrucks/",
+          },
+          {
+            title: "LDS",
+            url: "https://iamapps.udtrucks.com/lds/lds.asp?country=#Country",
+          },
+          {
+            title: "LES Supply Chain Packaging",
+            url: "https://saples.volvo.com/LESSCP",
+          },
+          { title: "LSS", url: "https://iamapps.udtrucks.com/lss/" },
+          { title: "Management UI", url: "http://secure.volvo.com/mgmui" },
+          {
+            title: "My dealer info",
+            url: "https://securemobile.volvo.com/ctdiex/prod/",
+          },
+          {
+            title: "Navigator",
+            url: "https://federate.volvo.com/idp/startSSO.ping?PartnerSpId=https://volvogroup.csod.com/",
+          },
+          { title: "Nii@UD", url: "https://iamapps.udtrucks.com/Nii" },
+          {
+            title: "OIC",
+            url: "https://ud-trucks-oic-frwol8m5e4md-fr.integration.ocp.oraclecloud.com/ic/home/",
+          },
+          { title: "OM (Order Manager) UD", url: "https://iamapps.udtrucks.com/om/" },
+          { title: "OM (Order Manager) Volvo", url: "https://secure4.volvo.com/om/" },
+          { title: "OnDemand", url: "https://secure8.volvo.com/cmod/" },
+          {
+            title: "One View",
+            url: "https://gdsp.volvo.com/?idp=Azure&state=oneview-app",
+          },
+          {
+            title: "OTM4D",
+            url: "https://otmgtm-udtrucksotm.otmgtm.eu-frankfurt-1.ocs.oraclecloud.com/",
+          },
+          {
+            title: "Parts & Service Technical Document Inquiry ",
+            url: "https://secure5.volvo.com/TechDocInquiry",
+          },
+          {
+            title: "Parts Direct Ship",
+            url: "https://secure7.volvo.com/DirectShipment",
+          },
+          { title: "Parts Online UD", url: "https://iamapps.udtrucks.com/polud" },
+          {
+            title: "Parts Online Volvo",
+            url: "https://secure.volvo.com/pol/mainEntry.do",
+          },
+          {
+            title: "Parts Quick reference ",
+            url: "https://secure5.volvo.com/VolvopartsQR",
+          },
+          { title: "PERF for UD", url: "https://securedata.volvo.com/perf-ud/" },
+          {
+            title: "Performance Calculator (PERF)",
+            url: "https://securedata.volvo.com/perf-ud/",
+          },
+          {
+            title: "Planner Service",
+            url: "https://iamapps.udtrucks.com/plns?country=#Country",
+          },
+          { title: "PrAudit", url: "http://secure4.volvo.com/PrAudit" },
+          { title: "PRAUDIT@UD", url: "https://securewebud.volvo.com/praudit/" },
+          {
+            title: "ProBuilder Translator (CONDOR)",
+            url: "https://iamapps.udtrucks.com/PBuilderTranslator/PBT10/",
+          },
+          {
+            title: "ProBuilder Translator (KAZET)",
+            url: "https://iamapps.udtrucks.com/PBuilderTranslator/PBT8/",
+          },
+          {
+            title: "ProBuilder Translator (UD VALUE)",
+            url: "https://iamapps.udtrucks.com/PBuilderTranslator/PBT6/",
+          },
+          {
+            title: "ProBuilder Translator (UD)",
+            url: "https://iamapps.udtrucks.com/PBuilderTranslator/PBT5/",
+          },
+          {
+            title: "Product History Viewer (PHV)",
+            url: "http://secure4.volvo.com/ProductHistoryViewer/#/main",
+          },
+          {
+            title: "Prompt",
+            url: "https://saas.volvo.com/Prompt/web?portal=external-portal",
+          },
+          { title: "QRS", url: "http://secure.volvo.com/qrs/" },
+          {
+            title: "Recall X",
+            url: "https://iamapps.udtrucks.com/pkmscdsso?https://iamappsjp.udtrucks.com/recallx",
+          },
+          {
+            title: "Regional Tax and Fee ",
+            url: "https://iamapps.udtrucks.com/rtfjapan/",
+          },
+          {
+            title: "Regional Tax and Fee  Volvo",
+            url: "https://secure7.volvo.com/rtf/",
+          },
+          {
+            title: "Registration Process UD",
+            url: "https://grouptrucksportal.volvo.com/ebusiness/rp/registrationproc.aspx?brandid=130",
+          },
+          {
+            title: "Remote Workshop Tool",
+            url: "https://securedata.volvo.com/RWT/?b=VUR8UldU",
+          },
+          {
+            title: "Remote Workshop Tools (RWT)",
+            url: "https://securedata.volvo.com/RWT?b=VUR8UldU",
+          },
+          { title: "Rise", url: "http://secure7.volvo.com/J48RISE" },
+          {
+            title: "SA Quotation Tool",
+            url: "https://iamapps.udtrucks.com/pkmscdsso?https://iamappsjp.udtrucks.com/saquotation",
+          },
+          {
+            title: "Sales Tool Product Information ",
+            url: "https://iamapps.udtrucks.com/stpi/?company=ud%20trucks",
+          },
+          {
+            title: "SeMA",
+            url: "https://iamapps.udtrucks.com/sema/?country=#Country",
+          },
+          {
+            title: "Service Contract Quotation",
+            url: "https://secure4.volvo.com/scq",
+          },
+          {
+            title: "Service Schedule & Contract Quote",
+            url: "https://iamapps.udtrucks.com/plns_sscq/",
+          },
+          {
+            title: "Subscription",
+            url: "https://grouptrucksportal.volvo.com/ebusiness/subscription/managesubscription.aspx",
+          },
+          {
+            title: "Tech Tool Monitor",
+            url: "https://www1.dotcom-monitor.com/reporting/Card/detail.aspx?uid=f6a31ce357d54271aad99c2569298964&ID=0",
+          },
+          {
+            title: "Total Cost Tool",
+            url: "https://secure4.volvo.com/CostRevenueandProfitabilityCalculationTool/",
+          },
+          {
+            title: "Truck Invoicing Application",
+            url: "http://secure4.volvo.com/TIA/landingPage?connectionName=VF05",
+          },
+          {
+            title: "Truck related electronic forms",
+            url: "https://secure5.volvo.com/Extranetforms",
+          },
+          {
+            title: "Truck related electronic forms",
+            url: "https://secure9.volvo.com/ProductHistoryViewer/",
+          },
+          {
+            title: "Truck Service Agreements Document Inquiry ",
+            url: "https://secure5.volvo.com/SADocInquiry",
+          },
+          { title: "TruckShop", url: "https://iamapps.udtrucks.com/udts" },
+          {
+            title: "UCHP",
+            url: "https://securemobile.volvo.com/uchp/client?portal=external-portal",
+          },
+          { title: "UD BI", url: "https://securedatajp.volvo.com/partner" },
+          { title: "UD BI Temporary", url: "https://udbi.srv.volvo.com/hub/my/work" },
+          {
+            title: "UD Bodybuilder Instructions",
+            url: "https://securemobile2.volvo.com/udbi/app.php/ud/eng/home/order_information",
+          },
+          {
+            title: "UD Communication System",
+            url: "https://iamapps.udtrucks.com/mga/sps/oauth/oauth20/authorize?client_id=UDCS&response_type=token&redirect_uri=https://iamapps.udtrucks.com/udcs-home",
+          },
+          { title: "UD Dynamics", url: "https://uddynamics.crm7.dynamics.com/" },
+          { title: "UD EPC", url: "https://saas.volvo.com/catsmart/" },
+          {
+            title: "UD New Truck Reservation",
+            url: "https://iamapps.udtrucks.com/pkmscdsso?https://iamappsjp.udtrucks.com/udntrj",
+          },
+          {
+            title: "UD Product History Viewer",
+            url: "https://iamapps.udtrucks.com/ProductHistoryViewer",
+          },
+          {
+            title: "UD Trucks Navigator",
+            url: "https://udtrucks.csod.com/samldefault.aspx",
+          },
+          { title: "UD Vision", url: "https://iamapps.udtrucks.com/udvision" },
+          {
+            title: "UD Warranty Binder",
+            url: "https://iamapps.udtrucks.com/portal/?categoryId=32",
+          },
+          { title: "UD_BI_BO", url: "https://sapbo.volvo.com/BOE/BI" },
+          {
+            title: "UDIS Q&W Business Process Guideline",
+            url: "https://iamapps.udtrucks.com/portal/?categoryId=33",
+          },
+          { title: "UDTC EMS", url: "https://udtcems.cloudgear.services" },
+          { title: "UDTCFS", url: "https://iamapps.udtrucks.com/udcfs" },
+          {
+            title: "UDUT",
+            url: "https://iamapps.udtrucks.com/pkmscdsso?https://iamappsjp.udtrucks.com/udut",
+          },
+          {
+            title: "UDUT EDU",
+            url: "https://iamapps.udtrucks.com/pkmscdsso?https://iamappsjp.udtrucks.com/udutqa",
+          },
+          {
+            title: "UDメンテナンスマニュアル(レガシー)",
+            url: "https://ud-smanuals.udtrucks.net",
+          },
+          { title: "VDA+", url: "https://securemobile.volvo.com/VDAPLUS/index.html" },
+          {
+            title: "Vehicle Data Portal",
+            url: "https://vehicledataportal.udtrucks.co.jp/vdp/",
+          },
+          {
+            title: "Volvo Group Navigator",
+            url: "https://federate.volvo.com/idp/startSSO.ping?PartnerSpId=https://volvogroup.csod.com/",
+          },
+          {
+            title: "Volvo Truck Finder",
+            url: "https://secure.volvo.com/truckfinder/StartPage.aspx",
+          },
+          { title: "Volvo Trucks Academy ", url: "http://secure3.volvo.com/lms/" },
+          { title: "VOSP new", url: "https://saas.volvo.com/vospcq/" },
+          { title: "VSR Explorer", url: "https://secure3.volvo.com/vsr/" },
+          {
+            title: "VSS 4 UD",
+            url: "https://iamapps.udtrucks.com/vss_connect_prod/?Brand=UD%20TRUCKS",
+          },
+          {
+            title: "VSS 4 Volvo",
+            url: "https://secure9.volvo.com/vss_connect_prod/?Brand=Volvo",
+          },
+          {
+            title: "Warehouse Parts Discrepancy",
+            url: "https://secure7.volvo.com/wareHSDiscrepancyLS",
+          },
+          { title: "WebEDI", url: "https://iamapps.udtrucks.com/webedi" },
+          {
+            title: "Weight Information System (WIS)",
+            url: "https://securedata.volvo.com/launchwisperf/start/?lang=ENGVT&market=ENG&system=WIS",
+          },
+          {
+            title: "Wiring Diagrams",
+            url: "https://secure3.volvo.com/wiringdiagrams",
+          },
+          { title: "WIS for UD", url: "https://securedata.volvo.com/wis-ud/" },
+          {
+            title: "Xtra Transport@UD_PROD",
+            url: "https://iamapps.udtrucks.com/xtraud/",
+          },
+          { title: "品質情報MIC", url: "https://ud-mic.udtrucks.net" },
+          {
+            title: "新コンドルメンテナンスマニュアル",
+            url: "https://s-manuals.udtrucks.net",
+          },
+          {
+            title: "新電子帳票ILF",
+            url: "https://ilf-d.udtrucks.net/ilf/index.html",
+          },
+          { title: "部品技術問合せ(FAQ)", url: "https://ud-faqjp.udtrucks.net" },
+          { title: "電子決裁", url: "https://ud-docgear.udtrucks.net/docgear" },
+        ]
+      }
+    },
+    computed: {
+      filteredLinks() {
+        return this.links.filter(x => x.title.toLowerCase().includes(this.criteria.toLowerCase()));
+      }
+    },
+    methods: {
+      initTooltips() {
+        const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+        const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+      }
+    },
+    mounted() {
+      this.isLoaded = true;
+      this.initTooltips();
+    }
+  }).mount('#app')
+</script>
